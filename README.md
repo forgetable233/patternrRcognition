@@ -10,5 +10,7 @@ sudo chmod +x scripts/init.sh
 scripts/init.sh
 ```
 
-运行环境依靠`environment.yml`配置即可
-
+运行环境依靠`requirements.txt`配置即可，通过pip可以完成配置
+```shell
+pip install requirements.txt
+```
