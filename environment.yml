@@ -13,3 +13,4 @@ dependencies:
     - imageio-ffmpeg
     - configargparse
     - imagemagick
+    - pytorch=1.11
