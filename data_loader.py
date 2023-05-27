@@ -23,6 +23,7 @@ class DataLoader:
             for file in files:
                 with open(current_address + json_path + file) as json_file:
                     data = json.load(json_file)
+                    # print(json.dumps(data, indent=4))
                     self.json.append(data)
 
         for roots, dirs, files in os.walk(current_address + bmp_path):
@@ -33,3 +34,4 @@ class DataLoader:
         assert len(self.json) == len(self.bmp)
         print('have successfully loaded data')
         print('the input data size is ' + str(len(self.json)))
+        print('heiheihei')
