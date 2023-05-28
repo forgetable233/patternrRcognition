@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #cd ..
 echo `pwd`
-if [ ! -f "dataset.rar" ]; then
-    echo "unable to find dataset.rar"
-    exit
+if [ -f "dataset.rar" ]; then
+    unrar x dataset.rar
+    mv dataset.rar dataset/
 fi
 
-unrar x dataset.rar
-mv dataset.rar dataset/
+python src/jsonrenew.py
+python src/jsontrans.py
