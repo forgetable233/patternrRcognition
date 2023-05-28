@@ -6,17 +6,5 @@ if [ ! -f "dataset.rar" ]; then
     exit
 fi
 
-if [ ! -d "data" ]; then
-    mkdir "data"
-fi
-
-mv dataset.rar data
-cd data || exit
-mkdir json
-mkdir bmp
-unrar e dataset.rar
-
-# shellcheck disable=SC2035
-mv *.json json
-# shellcheck disable=SC2035
-mv *.bmp bmp
+unrar x dataset.rar
+mv dataset.rar dataset/
