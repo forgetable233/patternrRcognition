@@ -29,7 +29,7 @@ class DataSet(Dataset):
         assert len(self.img) == len(self.json)
 
     def load_json_data(self):
-        test = np.zeros(11)
+        test = np.zeros(10)
         print(test)
         for temp_json in self.json:
             for json_data in temp_json.get('shapes'):
@@ -63,10 +63,10 @@ class DataSet(Dataset):
                     test[9] += 1
                 elif label == 'tonnisL2':
                     self.tonnisL2.append(json_data.get('points')[0])
-                    test[10] += 1
+                    test[0] += 1
         length = test[0]
         print(test)
-        for num in test[1:]:
+        for num in test:
             assert num == length
 
 

@@ -2,6 +2,7 @@ import json
 import os
 import argparse
 from copy import deepcopy
+import numpy as np
 
 
 def rename_json(json_path):
@@ -16,38 +17,74 @@ def rename_json(json_path):
             os.rename(old_name, new_name)  # json文件重命名
 
 
+def check_json(jsonfile, isDDH):
+    # DongChengrui version
+    shapes = jsonfile.get('shapes')
+    tags = np.zeros(10)
+    for shape in shapes:
+        label = shape.get('label')
+        if label == 'TeardropR':
+            tags[0] += 1
+        elif label == 'TeardropL':
+            tags[1] += 1
+        elif label == 'TiR':
+            tags[2] += 1
+        elif label == 'TiL':
+            tags[3] += 1
+        elif label == 'FHR':
+            tags[4] += 1
+        elif label == 'FHL':
+            tags[5] += 1
+        elif label == 'tonnisR1':
+            tags[6] += 1
+        elif label == 'tonnisR2':
+            tags[7] += 1
+        elif label == 'tonnisL1':
+            tags[8] += 1
+        elif label == 'tonnisL2':
+            tags[9] += 1
+    # print(tags)
+    for tag in tags:
+        if tag != 1.:
+            return False
+    # LiuJiaXuan version
+    label_set = set()
+    circle = 0
+    point = 0
+    rectangle = 0
+    for j in jsonfile['shapes']:
+        point_list = j['points']
+        label_set.add(j['label'])
+        if len(point_list) == 2 and j['shape_type'] == "circle":
+            circle = circle + 1
+        if len(point_list) == 1 and (j['shape_type'] == "point" or j['shape_type'] == "polygon"):
+            point = point + 1
+        if len(point_list) == 2 and j['shape_type'] == "rectangle":
+            rectangle = rectangle + 1
+
+    if isDDH:
+        if circle != 2 or point != 8 or len(label_set) != 10:
+            return False
+    else:
+        if circle != 2 or point != 8:
+            if circle != 0 or point != 10:
+                return False
+        if len(label_set) != 11:
+            return False
+    return True
+
+
 def fause_json(json_path, fause_json_list, isDDH):
     '''
     筛选有问题的 json 文件
     '''
     jsonfilelist = os.listdir(json_path)
     for i in jsonfilelist:
-        circle = 0
-        point = 0
-        rectangle = 0
+
         with open(json_path + i, 'r', encoding='utf-8') as f:
             jsonfile = json.loads(f.read())
-        label_set = set()
-        for j in jsonfile['shapes']:
-            point_list = j['points']
-            label_set.add(j['label'])
-            if len(point_list) == 2 and j['shape_type'] == "circle":
-                circle = circle + 1
-            if len(point_list) == 1 and (j['shape_type'] == "point" or j['shape_type'] == "polygon"):
-                point = point + 1
-            if len(point_list) == 2 and j['shape_type'] == "rectangle":
-                rectangle = rectangle + 1
-        if (isDDH):
-            if (circle != 2 or point != 8):
-                fause_json_list.append(i)
-            if (len(label_set) != 10):
-                fause_json_list.append(i)
-        else:
-            if (circle != 2 or point != 8):
-                if (circle != 0 or point != 10):
-                    fause_json_list.append(i)
-            if (len(label_set) != 11):
-                fause_json_list.append(i)
+        if not check_json(jsonfile, isDDH):
+            fause_json_list.append(i)
     return fause_json_list
 
 
