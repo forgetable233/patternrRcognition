@@ -26,7 +26,7 @@ if __name__ == '__main__':
             if args.mask:
                 if not os.path.exists(out_mask1):                   # 文件夹是否存在
                     os.makedirs(out_mask1)
-                src_mask = "temp1/label.png"
+                src_mask = "/temp1/label.png"
                 dst_mask = out_mask1 + os.path.splitext(sfn1)[0] + ".png"
                 shutil.copyfile(src_mask, dst_mask)
 
@@ -34,11 +34,11 @@ if __name__ == '__main__':
             if args.viz:
                 if not os.path.exists(out_viz1):           # 文件夹是否存在
                     os.makedirs(out_viz1)
-                src_viz = "temp1/label_viz.png"
+                src_viz = "/temp1/label_viz.png"
                 dst_viz = out_viz1 + os.path.splitext(sfn1)[0] + ".png"
                 shutil.copyfile(src_viz, dst_viz)
-             
-             
+
+
                 
     jsonFolder2 = args.input + "normal/labels_new/"
     out_mask2 = args.mask + "normal/mask/"

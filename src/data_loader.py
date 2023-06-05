@@ -4,11 +4,21 @@ import matplotlib.pyplot as plt
 import json
 import os
 import cv2
+import argparse
 
 
-class DataLoader:
+def get_args():
+    parser = argparse.ArgumentParser(description='load json and bmp image')
+    parser.add_argument('--ddh_path', default='dataset/DDH/')
+    parser.add_argument('--normal_path', default='dataset/normal')
+    parser.add_argument('--json_path', default='labels_new')
+    parser.add_argument('--img_path', default='images')
+    return parser.parse_args()
+
+
+class LoadData:
     def __init__(self):
-        self.ddH_imgs = []
+        self.ddh_imgs = []
         self.ddh_labels = []
 
         self.normal_imgs = []
@@ -16,41 +26,34 @@ class DataLoader:
 
         self.test_bmp = []
         self.test_json = []
-        
+
     def load_data(self):
         print('begin to load data\n')
-        current_address = os.path.dirname(os.path.abspath(__file__))
-        ddh_images = os.path.join(current_address, 'dataset/DDH/images')
-        ddh_labels = os.path.join(current_address, 'dataset/DDH/labels')
-        normal_images = os.path.join(current_address, 'dataset/normal/images')
-        normal_labels = os.path.join(current_address, 'dataset/normal/labels')
-        for root, dirs, files in os.walk(ddh_images):
+        args = get_args()
+        label_path = os.path.join(args.ddh_path, args.json_path)
+        img_path = os.path.join(args.ddh_path, args.img_path)
+        for root, dirs, files in os.walk(label_path):
             for file in files:
-                img = cv2.imread(os.path.join(ddh_images, file))
-                self.ddH_imgs.append(img)
-
-        for root, dirs, files in os.walk(normal_images):
-            for file in files:
-                img = cv2.imread(os.path.join(normal_images, file))
-                self.normal_imgs.append(img)
-
-        for root, dirs, files in os.walk(ddh_labels):
-            for file in files:
-                with open(os.path.join(ddh_labels, file)) as f:
+                with open(os.path.join(label_path, file)) as f:
                     data = json.load(f)
                     self.ddh_labels.append(data)
+                    tar_img = os.path.join(img_path, data.get('imagePath'))
+                    img = cv2.imread(tar_img)
+                    self.ddh_imgs.append(img)
+        normal_path = os.path.join(args.normal_path, args.json_path)
 
-        for root, dirs, files in os.walk(normal_labels):
+        for root, dirs, files in os.walk(normal_path):
             for file in files:
-                with open(os.path.join(normal_labels, file)) as f:
+                with open(os.path.join(normal_path, file)) as f:
                     data = json.load(f)
                     self.normal_labels.append(data)
-
-        assert len(self.normal_labels) == len(self.normal_imgs)
-        assert len(self.ddh_labels) == len(self.ddH_imgs)
-
+                    tar_img = os.path.join(normal_path, data.get('imagePath'))
+                    img = cv2.imread(tar_img)
+                    self.normal_imgs.append(img)
+        assert len(self.ddh_imgs) != 0 and len(self.normal_imgs) != 0
+        assert len(self.ddh_labels) == len(self.ddh_imgs)
+        assert len(self.normal_imgs) == len(self.normal_labels)
         ddh_len = len(self.ddh_labels)
-        normal_len = len(self.normal_imgs)
+        normal_len = len(self.normal_labels)
         print('have successfully loaded ' + str(ddh_len) + ' ddh ')
         print('have successfully loaded ' + str(normal_len) + ' normal ')
-
